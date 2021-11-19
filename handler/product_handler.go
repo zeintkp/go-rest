@@ -2,19 +2,20 @@ package handler
 
 import (
 	"fmt"
-	"go-rest/domain"
-	"go-rest/helper/requestHelper"
-	"go-rest/helper/responseHelper"
 	"net/http"
 	"strconv"
+
+	"github.com/zeintkp/go-rest/domain"
+	"github.com/zeintkp/go-rest/helper/requestHelper"
+	"github.com/zeintkp/go-rest/helper/responseHelper"
 
 	"github.com/labstack/echo/v4"
 )
 
 //NewProductHandler is used to create Product Handler
-func NewProductHandler(e *echo.Echo, productUC *domain.ProductUsecase) {
+func NewProductHandler(e *echo.Echo, productUC domain.ProductUsecase) {
 	handler := &ProductHandler{
-		productUc: *productUC,
+		productUc: productUC,
 	}
 
 	routeV1(e.Group("/api/v1/products"), handler)
@@ -35,60 +36,65 @@ type ProductHandler struct {
 }
 
 //Browse is used to handle browse in products endpoint
-func (handler *ProductHandler) Browse(ctx echo.Context) error {
+func (handler *ProductHandler) Browse(c echo.Context) error {
 
-	search := ctx.QueryParam("search")
-	order := ctx.QueryParam("order")
-	sort := ctx.QueryParam("sort")
-	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
-	page, _ := strconv.Atoi(ctx.QueryParam("page"))
+	search := c.QueryParam("search")
+	order := c.QueryParam("order")
+	sort := c.QueryParam("sort")
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	ctx := c.Request().Context()
 
-	productVM, paginationVM, err := handler.productUc.Browse(search, order, sort, limit, page)
+	productVM, paginationVM, err := handler.productUc.Browse(ctx, search, order, sort, limit, page)
 
-	return ctx.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, paginationVM, err))
+	return c.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, paginationVM, err))
 }
 
 //Create is used to handle create in products endpoint
-func (handler *ProductHandler) Create(ctx echo.Context) error {
+func (handler *ProductHandler) Create(c echo.Context) error {
 
-	input, err := requestHelper.GetInstance().ValidateRequest(ctx, new(domain.ProductRequest))
+	input, err := requestHelper.GetInstance().ValidateRequest(c, new(domain.ProductRequest))
 	if err != nil {
 		fmt.Println(err.Error())
-		return ctx.JSON(responseHelper.BuildResponse(http.StatusBadRequest, nil, nil, err))
+		return c.JSON(responseHelper.BuildResponse(http.StatusBadRequest, nil, nil, err))
 	}
+	ctx := c.Request().Context()
 
-	productVM, err := handler.productUc.Create(*input.(*domain.ProductRequest))
-	return ctx.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, nil, err))
+	productVM, err := handler.productUc.Create(ctx, *input.(*domain.ProductRequest))
+	return c.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, nil, err))
 }
 
 //Read is used to handle read in products endpoint
-func (handler *ProductHandler) Read(ctx echo.Context) error {
+func (handler *ProductHandler) Read(c echo.Context) error {
 
-	id := ctx.Param("id")
+	id := c.Param("id")
+	ctx := c.Request().Context()
 
-	productVM, err := handler.productUc.Read(id)
-	return ctx.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, nil, err))
+	productVM, err := handler.productUc.Read(ctx, id)
+	return c.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, nil, err))
 }
 
 //Update is used to handle update in products endpoint
-func (handler *ProductHandler) Update(ctx echo.Context) error {
+func (handler *ProductHandler) Update(c echo.Context) error {
 
-	input, err := requestHelper.GetInstance().ValidateRequest(ctx, new(domain.ProductRequest))
+	input, err := requestHelper.GetInstance().ValidateRequest(c, new(domain.ProductRequest))
 	if err != nil {
-		return ctx.JSON(responseHelper.BuildResponse(http.StatusBadRequest, nil, nil, err))
+		return c.JSON(responseHelper.BuildResponse(http.StatusBadRequest, nil, nil, err))
 	}
 
-	id := ctx.Param("id")
+	id := c.Param("id")
+	ctx := c.Request().Context()
 
-	productVM, err := handler.productUc.Update(*input.(*domain.ProductRequest), id)
-	return ctx.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, nil, err))
+	productVM, err := handler.productUc.Update(ctx, *input.(*domain.ProductRequest), id)
+	return c.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, nil, err))
 }
 
 //Delete is used to handle delete in products endpoint
-func (handler *ProductHandler) Delete(ctx echo.Context) error {
+func (handler *ProductHandler) Delete(c echo.Context) error {
 
-	id := ctx.Param("id")
+	id := c.Param("id")
+	ctx := c.Request().Context()
 
-	productVM, err := handler.productUc.Delete(id)
-	return ctx.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, nil, err))
+	productVM, err := handler.productUc.Delete(ctx, id)
+	return c.JSON(responseHelper.BuildResponse(http.StatusOK, productVM, nil, err))
 }

@@ -1,6 +1,9 @@
 package domain
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+)
 
 //Products struct
 type Product struct {
@@ -27,19 +30,19 @@ type ProductVM struct {
 }
 
 type ProductRepository interface {
-	Browse(search, order, sort string, limit, offset int) (data []Product, total int, err error)
-	Create(product Product) error
-	Read(id string) (data Product, err error)
-	Update(product Product) error
-	Delete(product Product) error
-	IsExist(id, name string) (isExist bool, err error)
+	Browse(ctx context.Context, search, order, sort string, limit, offset int) (data []Product, total int, err error)
+	Create(ctx context.Context, product Product) error
+	Read(ctx context.Context, id string) (data Product, err error)
+	Update(ctx context.Context, product Product) error
+	Delete(ctx context.Context, product Product) error
+	IsExist(ctx context.Context, id, name string) (isExist bool, err error)
 }
 
 type ProductUsecase interface {
-	Browse(search, order, sort string, limit, page int) (productVM []ProductVM, pagination PaginationVM, err error)
-	Create(req ProductRequest) (productVM ProductVM, err error)
-	Read(id string) (productVM ProductVM, err error)
-	Update(req ProductRequest, id string) (productVM ProductVM, err error)
-	Delete(id string) (productVM ProductVM, err error)
+	Browse(ctx context.Context, search, order, sort string, limit, page int) (productVM []ProductVM, pagination PaginationVM, err error)
+	Create(ctx context.Context, req ProductRequest) (productVM ProductVM, err error)
+	Read(ctx context.Context, id string) (productVM ProductVM, err error)
+	Update(ctx context.Context, req ProductRequest, id string) (productVM ProductVM, err error)
+	Delete(ctx context.Context, id string) (productVM ProductVM, err error)
 	ConvertVM(product Product) ProductVM
 }

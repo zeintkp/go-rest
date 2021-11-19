@@ -1,12 +1,14 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
-	"go-rest/domain"
 	"strings"
+
+	"github.com/zeintkp/go-rest/domain"
 )
 
-func NewProductRepository(db *sql.DB) domain.ProductRepository {
+func NewProductRepository(db *sql.DB) *productRepository {
 	return &productRepository{db: db}
 }
 
@@ -14,7 +16,9 @@ type productRepository struct {
 	db *sql.DB
 }
 
-func (repository *productRepository) Browse(search, order, sort string, limit, offset int) (data []domain.Product, total int, err error) {
+func (repository *productRepository) Browse(ctx context.Context, search, order, sort string, limit, offset int) (data []domain.Product, total int, err error) {
+	//hindari pake select *
+	//validate args
 	query := `select * from "products" 
 					where "product_name" ilike $1 
 					and "deleted_at" is null 
@@ -28,7 +32,7 @@ func (repository *productRepository) Browse(search, order, sort string, limit, o
 
 	dataTemp := domain.Product{}
 
-	for rows.Next() {
+	for rows.Next() { //row.Struct.scan
 		rows.Scan(
 			&dataTemp.ID,
 			&dataTemp.ProductName,
@@ -52,7 +56,7 @@ func (repository *productRepository) Browse(search, order, sort string, limit, o
 	return data, total, err
 }
 
-func (repository *productRepository) Create(product domain.Product) error {
+func (repository *productRepository) Create(ctx context.Context, product domain.Product) error {
 	query := `insert into "products" ("id","product_name", "is_active", "created_at") 
 					values ($1,$2,$3,$4)`
 
@@ -60,7 +64,7 @@ func (repository *productRepository) Create(product domain.Product) error {
 	return err
 }
 
-func (repository *productRepository) Read(id string) (data domain.Product, err error) {
+func (repository *productRepository) Read(ctx context.Context, id string) (data domain.Product, err error) {
 	query := `select * from "products"
 				where "id"=$1 and "deleted_at" is null`
 
@@ -76,7 +80,7 @@ func (repository *productRepository) Read(id string) (data domain.Product, err e
 	return data, err
 }
 
-func (repository *productRepository) Update(product domain.Product) error {
+func (repository *productRepository) Update(ctx context.Context, product domain.Product) error {
 	query := `update "products" set 
 				"product_name" = $1,
 				"is_active" = $2,
@@ -87,7 +91,7 @@ func (repository *productRepository) Update(product domain.Product) error {
 	return err
 }
 
-func (repository *productRepository) Delete(product domain.Product) error {
+func (repository *productRepository) Delete(ctx context.Context, product domain.Product) error {
 	query := `update "products" set 
 				"deleted_at" = $1
 				where "id" = $2`
@@ -96,7 +100,7 @@ func (repository *productRepository) Delete(product domain.Product) error {
 	return err
 }
 
-func (repository *productRepository) IsExist(id, name string) (isExist bool, err error) {
+func (repository *productRepository) IsExist(ctx context.Context, id, name string) (isExist bool, err error) {
 	var count int
 
 	if id != "" {
