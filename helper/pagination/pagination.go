@@ -1,6 +1,6 @@
 package pagination
 
-import "go-rest/domain"
+import "github.com/zeintkp/go-rest/domain"
 
 const (
 	defaultLimit = 10
@@ -23,7 +23,7 @@ func SetPaginationParameter(page, limit int, order, sort string) (int, int, int,
 		order = defaultOrder
 	}
 
-	if sort == "" {
+	if sort != "desc" {
 		sort = defaultSort
 	}
 

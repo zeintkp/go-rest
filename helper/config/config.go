@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"go-rest/helper/exception"
+	"github.com/zeintkp/go-rest/helper/exception"
 
 	"github.com/joho/godotenv"
 )

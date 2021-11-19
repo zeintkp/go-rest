@@ -2,10 +2,11 @@ package requestHelper
 
 import (
 	"errors"
-	"go-rest/helper/exception"
-	"go-rest/helper/str"
 	"strings"
 	"sync"
+
+	"github.com/zeintkp/go-rest/helper/exception"
+	"github.com/zeintkp/go-rest/helper/str"
 
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"

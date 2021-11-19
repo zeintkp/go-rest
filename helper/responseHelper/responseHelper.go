@@ -2,8 +2,9 @@ package responseHelper
 
 import (
 	"database/sql"
-	"go-rest/domain"
 	"net/http"
+
+	"github.com/zeintkp/go-rest/domain"
 )
 
 //BuildResponse is used to send response

@@ -3,8 +3,9 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"go-rest/helper/config"
-	"go-rest/helper/exception"
+
+	"github.com/zeintkp/go-rest/helper/config"
+	"github.com/zeintkp/go-rest/helper/exception"
 
 	_ "github.com/lib/pq" //pq is a pure Go Postgres driver for the database/sql package
 )
